@@ -14,6 +14,7 @@
 #import "RTCVideoEncoderH264.h"
 #import "api/video_codec/RTCVideoCodecConstants.h"
 #import "api/video_codec/RTCVideoEncoderAV1.h"
+#import "api/video_codec/RTCVideoEncoderAV1.h"
 #import "api/video_codec/RTCVideoEncoderVP8.h"
 #import "api/video_codec/RTCVideoEncoderVP9.h"
 #import "base/RTCVideoCodecInfo.h"
