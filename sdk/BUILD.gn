@@ -434,27 +434,36 @@ if (is_ios || is_mac) {
     }
 
     rtc_library("video_objc") {
-      sources = [
-        "objc/components/renderer/opengl/RTCDefaultShader.h",
-        "objc/components/renderer/opengl/RTCDefaultShader.mm",
-        "objc/components/renderer/opengl/RTCI420TextureCache.h",
-        "objc/components/renderer/opengl/RTCI420TextureCache.mm",
-        "objc/components/renderer/opengl/RTCOpenGLDefines.h",
-        "objc/components/renderer/opengl/RTCShader.h",
-        "objc/components/renderer/opengl/RTCShader.mm",
-        "objc/components/renderer/opengl/RTCVideoViewShading.h",
-      ]
+      sources = []
+      if (target_environment != "catalyst") {
+        sources += [
+          "objc/components/renderer/opengl/RTCDefaultShader.h",
+          "objc/components/renderer/opengl/RTCDefaultShader.mm",
+          "objc/components/renderer/opengl/RTCI420TextureCache.h",
+          "objc/components/renderer/opengl/RTCI420TextureCache.mm",
+          "objc/components/renderer/opengl/RTCOpenGLDefines.h",
+          "objc/components/renderer/opengl/RTCShader.h",
+          "objc/components/renderer/opengl/RTCShader.mm",
+          "objc/components/renderer/opengl/RTCVideoViewShading.h",
+        ]
+      }
       frameworks = [ "CoreVideo.framework" ]
       if (is_ios) {
-        sources += [
-          "objc/components/renderer/opengl/RTCNV12TextureCache.h",
-          "objc/components/renderer/opengl/RTCNV12TextureCache.m",
-        ]
+        if (target_environment != "catalyst") {
+          sources += [
+            "objc/components/renderer/opengl/RTCNV12TextureCache.h",
+            "objc/components/renderer/opengl/RTCNV12TextureCache.m",
+          ]
+        }
         frameworks += [
-          "GLKit.framework",
-          "OpenGLES.framework",
           "QuartzCore.framework",
         ]
+        if (target_environment != "catalyst") {
+          frameworks += [
+            "GLKit.framework",
+            "OpenGLES.framework",
+          ]
+        }
       } else if (is_mac) {
         frameworks += [
           "CoreMedia.framework",
@@ -492,9 +501,13 @@ if (is_ios || is_mac) {
         sources = [
           "objc/components/renderer/opengl/RTCDisplayLinkTimer.h",
           "objc/components/renderer/opengl/RTCDisplayLinkTimer.m",
-          "objc/components/renderer/opengl/RTCEAGLVideoView.h",
-          "objc/components/renderer/opengl/RTCEAGLVideoView.m",
         ]
+        if (target_environment != "catalyst") {
+          sources += [
+            "objc/components/renderer/opengl/RTCEAGLVideoView.h",
+            "objc/components/renderer/opengl/RTCEAGLVideoView.m",
+          ]
+        }
       }
       if (is_mac) {
         sources = [
@@ -506,10 +519,14 @@ if (is_ios || is_mac) {
       deps = [
         ":base_objc",
         ":helpers_objc",
-        ":video_objc",
         ":videocapture_objc",
         ":videoframebuffer_objc",
       ]
+      if (target_environment != "catalyst") {
+        deps += [
+          ":video_objc",
+        ]
+      }
     }
 
     if (rtc_use_metal_rendering) {
@@ -551,13 +568,17 @@ if (is_ios || is_mac) {
         deps = [
           ":base_objc",
           ":peerconnectionfactory_base_objc",
-          ":video_objc",
           ":videoframebuffer_objc",
           "../api/video:video_frame",
           "../api/video:video_rtp_headers",
           "../rtc_base:checks",
           "../rtc_base:rtc_base_approved",
         ]
+        if (target_environment != "catalyst") {
+          deps += [
+            ":video_objc",
+          ]
+        }
         configs += [ "..:common_objc" ]
         public_configs = [ ":common_config_objc" ]
       }
@@ -600,10 +621,14 @@ if (is_ios || is_mac) {
       deps = [
         ":base_objc",
         ":helpers_objc",
-        ":video_objc",
         ":videoframebuffer_objc",
         "../rtc_base/system:gcd_helpers",
       ]
+      if (target_environment != "catalyst") {
+        deps += [
+          ":video_objc",
+        ]
+      }
     }
 
     rtc_library("videocodec_objc") {
@@ -650,10 +675,14 @@ if (is_ios || is_mac) {
         ":native_video",
         ":videocodec_objc",
         ":videotoolbox_objc",
-        ":vp8",
-        ":vp9",
-        ":vpx_codec_constants",
       ]
+      if (target_environment != "catalyst") {
+        deps += [
+          ":vp8",
+          ":vp9",
+          ":vpx_codec_constants",
+        ]
+      }
     }
 
     rtc_library("vpx_codec_constants") {
@@ -682,8 +711,12 @@ if (is_ios || is_mac) {
       deps = [
         ":base_objc",
         ":wrapped_native_codec_objc",
-        "../modules/video_coding:webrtc_vp8",
       ]
+      if (target_environment != "catalyst") {
+        deps += [
+          "../modules/video_coding:webrtc_vp8",
+        ]
+      }
     }
 
     rtc_library("vp9") {
@@ -952,7 +985,6 @@ if (is_ios || is_mac) {
         ":mediasource_objc",
         ":native_api",
         ":native_video",
-        ":video_objc",
         ":videoframebuffer_objc",
         ":videorendereradapter_objc",
         ":videosource_objc",
@@ -987,6 +1019,11 @@ if (is_ios || is_mac) {
         "../system_wrappers:field_trial",
         "../system_wrappers:metrics",
       ]
+      if (target_environment != "catalyst") {
+        deps += [
+          ":video_objc",
+        ]
+      }
 
       if (is_ios) {
         deps += [ ":native_api_audio_device_module" ]
@@ -1034,7 +1071,6 @@ if (is_ios || is_mac) {
             ":native_api_audio_device_module",
             ":native_video",
             ":peerconnectionfactory_base_objc",
-            ":video_objc",
             ":video_toolbox_cc",
             ":videocapture_objc",
             ":videocodec_objc",
@@ -1052,6 +1088,11 @@ if (is_ios || is_mac) {
             "../system_wrappers",
             "//third_party/libyuv",
           ]
+          if (target_environment != "catalyst") {
+            deps += [
+              ":video_objc",
+            ]
+          }
 
           if (rtc_use_metal_rendering) {
             sources += [ "objc/unittests/RTCMTLVideoView_xctest.m" ]
@@ -1149,7 +1190,6 @@ if (is_ios || is_mac) {
           ":native_api",
           ":native_video",
           ":peerconnectionfactory_base_objc",
-          ":video_objc",
           ":videocapture_objc",
           ":videocodec_objc",
           ":videoframebuffer_objc",
@@ -1170,6 +1210,11 @@ if (is_ios || is_mac) {
           "../test:test_support",
           "//third_party/ocmock",
         ]
+        if (target_environment != "catalyst") {
+          deps += [
+            ":video_objc",
+          ]
+        }
 
         if (is_ios) {
           sources += [ "objc/unittests/RTCAudioSessionTest.mm" ]
@@ -1209,7 +1254,6 @@ if (is_ios || is_mac) {
           "objc/components/capturer/RTCFileVideoCapturer.h",
           "objc/components/network/RTCNetworkMonitor.h",
           "objc/components/renderer/metal/RTCMTLVideoView.h",
-          "objc/components/renderer/opengl/RTCEAGLVideoView.h",
           "objc/components/renderer/opengl/RTCVideoViewShading.h",
           "objc/components/video_codec/RTCCodecSpecificInfoH264.h",
           "objc/components/video_codec/RTCDefaultVideoDecoderFactory.h",
@@ -1259,13 +1303,18 @@ if (is_ios || is_mac) {
           "objc/api/peerconnection/RTCVideoSource.h",
           "objc/api/peerconnection/RTCVideoTrack.h",
           "objc/api/video_codec/RTCVideoCodecConstants.h",
-          "objc/api/video_codec/RTCVideoDecoderVP8.h",
-          "objc/api/video_codec/RTCVideoDecoderVP9.h",
-          "objc/api/video_codec/RTCVideoEncoderVP8.h",
-          "objc/api/video_codec/RTCVideoEncoderVP9.h",
           "objc/api/video_frame_buffer/RTCNativeI420Buffer.h",
           "objc/api/video_frame_buffer/RTCNativeMutableI420Buffer.h",
         ]
+        if (target_environment != "catalyst") {
+          common_objc_headers += [
+            "objc/components/renderer/opengl/RTCEAGLVideoView.h",
+            "objc/api/video_codec/RTCVideoDecoderVP8.h",
+            "objc/api/video_codec/RTCVideoDecoderVP9.h",
+            "objc/api/video_codec/RTCVideoEncoderVP8.h",
+            "objc/api/video_codec/RTCVideoEncoderVP9.h",
+          ]
+        }
 
         if (!build_with_chromium) {
           common_objc_headers += [
@@ -1310,8 +1359,12 @@ if (is_ios || is_mac) {
           "AVFoundation.framework",
           "CoreGraphics.framework",
           "CoreMedia.framework",
-          "GLKit.framework",
         ]
+        if (target_environment != "catalyst") {
+          frameworks += [
+            "GLKit.framework",
+          ]
+        }
 
         configs += [
           "..:common_objc",
@@ -1368,10 +1421,6 @@ if (is_ios || is_mac) {
           "objc/api/peerconnection/RTCTracing.h",
           "objc/api/peerconnection/RTCVideoSource.h",
           "objc/api/peerconnection/RTCVideoTrack.h",
-          "objc/api/video_codec/RTCVideoDecoderVP8.h",
-          "objc/api/video_codec/RTCVideoDecoderVP9.h",
-          "objc/api/video_codec/RTCVideoEncoderVP8.h",
-          "objc/api/video_codec/RTCVideoEncoderVP9.h",
           "objc/api/video_frame_buffer/RTCNativeI420Buffer.h",
           "objc/api/video_frame_buffer/RTCNativeMutableI420Buffer.h",
           "objc/base/RTCCodecSpecificInfo.h",
@@ -1409,6 +1458,14 @@ if (is_ios || is_mac) {
           "objc/components/video_frame_buffer/RTCCVPixelBuffer.h",
           "objc/helpers/RTCDispatcher.h",
         ]
+        if (target_environment != "catalyst") {
+          sources += [
+            "objc/api/video_codec/RTCVideoDecoderVP8.h",
+            "objc/api/video_codec/RTCVideoDecoderVP9.h",
+            "objc/api/video_codec/RTCVideoEncoderVP8.h",
+            "objc/api/video_codec/RTCVideoEncoderVP9.h",
+          ]
+        }
         if (!build_with_chromium) {
           sources += [
             "objc/api/logging/RTCCallbackLogger.h",
@@ -1566,7 +1623,6 @@ if (is_ios || is_mac) {
         ":helpers_objc",
         ":videocodec_objc",
         ":videoframebuffer_objc",
-        ":vpx_codec_constants",
         ":wrapped_native_codec_objc",
         "../api/video:video_frame",
         "../api/video:video_rtp_headers",
@@ -1578,6 +1634,11 @@ if (is_ios || is_mac) {
         "../rtc_base",
         "../rtc_base:checks",
       ]
+      if (target_environment != "catalyst") {
+        deps += [
+          ":vpx_codec_constants",
+        ]
+      }
     }
 
     rtc_library("video_toolbox_cc") {

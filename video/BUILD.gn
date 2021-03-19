@@ -387,8 +387,6 @@ if (rtc_include_tests) {
         "../modules/video_coding:video_coding_utility",
         "../modules/video_coding:webrtc_h264",
         "../modules/video_coding:webrtc_multiplex",
-        "../modules/video_coding:webrtc_vp8",
-        "../modules/video_coding:webrtc_vp9",
         "../rtc_base:rtc_base_approved",
         "../rtc_base:rtc_base_tests_utils",
         "../rtc_base:rtc_numerics",
@@ -408,6 +406,12 @@ if (rtc_include_tests) {
         "../test:video_test_common",
         "../test:video_test_support",
       ]
+      if (target_environment != "catalyst") {
+        deps += [
+          "../modules/video_coding:webrtc_vp8",
+          "../modules/video_coding:webrtc_vp9",
+        ]
+      }
       absl_deps = [
         "//third_party/abseil-cpp/absl/algorithm:container",
         "//third_party/abseil-cpp/absl/flags:flag",
@@ -699,8 +703,6 @@ if (rtc_include_tests) {
       "../modules/video_coding:video_coding_utility",
       "../modules/video_coding:webrtc_h264",
       "../modules/video_coding:webrtc_multiplex",
-      "../modules/video_coding:webrtc_vp8",
-      "../modules/video_coding:webrtc_vp9",
       "../rtc_base",
       "../rtc_base:checks",
       "../rtc_base:gunit_helpers",
@@ -735,6 +737,12 @@ if (rtc_include_tests) {
       "adaptation:video_adaptation",
       "//testing/gtest",
     ]
+    if (target_environment != "catalyst") {
+      deps += [
+        "../modules/video_coding:webrtc_vp8",
+        "../modules/video_coding:webrtc_vp9",
+      ]
+    }
     absl_deps = [
       "//third_party/abseil-cpp/absl/algorithm:container",
       "//third_party/abseil-cpp/absl/memory",

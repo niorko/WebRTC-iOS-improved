@@ -184,7 +184,7 @@ declare_args() {
   }
 
   # Determines whether Metal is available on iOS/macOS.
-  rtc_use_metal_rendering = is_mac || (is_ios && current_cpu == "arm64")
+  rtc_use_metal_rendering = is_mac || (is_ios && current_cpu == "arm64") || (is_ios && target_environment == "catalyst")
 
   # When set to false, builtin audio encoder/decoder factories and all the
   # audio codecs they depend on will not be included in libwebrtc.{a|lib}
@@ -989,8 +989,13 @@ if (is_ios) {
 
     copy("copy_umbrella_header_$target_name") {
       sources = [ umbrella_header_path ]
-      outputs =
-          [ "$root_out_dir/$output_name.framework/Headers/$output_name.h" ]
+      if (target_environment == "catalyst") {
+        outputs =
+            [ "$root_out_dir/WebRTC.framework/Versions/A/Headers/$output_name.h" ]
+      } else {
+        outputs =
+            [ "$root_out_dir/Versions/A/Headers/$output_name.h" ]
+      }
 
       deps = [ ":umbrella_header_$target_name" ]
     }
