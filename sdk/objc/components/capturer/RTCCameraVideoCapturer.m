@@ -49,6 +49,7 @@ const int64_t kNanosecondsPerSecond = 1000000000;
 
 @synthesize frameQueue = _frameQueue;
 @synthesize captureSession = _captureSession;
+@synthesize sampleBufferDelegate = _externalSampleBufferDelegate;
 @synthesize currentDevice = _currentDevice;
 @synthesize hasRetriedOnFatalError = _hasRetriedOnFatalError;
 @synthesize isRunning = _isRunning;
@@ -240,6 +241,12 @@ const int64_t kNanosecondsPerSecond = 1000000000;
            fromConnection:(AVCaptureConnection *)connection {
   NSParameterAssert(captureOutput == _videoDataOutput);
 
+  if (_externalSampleBufferDelegate != nil) {
+    [_externalSampleBufferDelegate captureOutput:captureOutput
+                           didOutputSampleBuffer:sampleBuffer
+                                  fromConnection:connection];
+  }
+
   if (CMSampleBufferGetNumSamples(sampleBuffer) != 1 || !CMSampleBufferIsValid(sampleBuffer) ||
       !CMSampleBufferDataIsReady(sampleBuffer)) {
     return;
@@ -302,6 +309,11 @@ const int64_t kNanosecondsPerSecond = 1000000000;
 - (void)captureOutput:(AVCaptureOutput *)captureOutput
     didDropSampleBuffer:(CMSampleBufferRef)sampleBuffer
          fromConnection:(AVCaptureConnection *)connection {
+  if (_externalSampleBufferDelegate != nil) {
+    [_externalSampleBufferDelegate captureOutput:captureOutput
+                             didDropSampleBuffer:sampleBuffer
+                                  fromConnection:connection];
+  }
 #if TARGET_OS_IPHONE
   CFStringRef droppedReason =
       CMGetAttachment(sampleBuffer, kCMSampleBufferAttachmentKey_DroppedFrameReason, nil);
