@@ -25,6 +25,8 @@ NS_EXTENSION_UNAVAILABLE_IOS("Camera not available in app extensions.")
 // Capture session that is used for capturing. Valid from initialization to dealloc.
 @property(readonly, nonatomic) AVCaptureSession *captureSession;
 
+@property(nonatomic, weak, nullable) id<AVCaptureVideoDataOutputSampleBufferDelegate> sampleBufferDelegate;
+
 // Returns list of available capture devices that support video capture.
 + (NSArray<AVCaptureDevice *> *)captureDevices;
 // Returns list of formats that are supported by this class for this device.
