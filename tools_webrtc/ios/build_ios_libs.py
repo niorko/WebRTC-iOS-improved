@@ -30,8 +30,8 @@ import find_depot_tools
 SDK_OUTPUT_DIR = os.path.join(SRC_DIR, 'out_ios_libs')
 SDK_FRAMEWORK_NAME = 'WebRTC.framework'
 
-DEFAULT_ARCHS = ENABLED_ARCHS = ['arm64', 'arm', 'x64', 'x86']
-IOS_DEPLOYMENT_TARGET = '10.0'
+DEFAULT_ARCHS = ENABLED_ARCHS = ['arm64', 'x64']
+IOS_DEPLOYMENT_TARGET = '12.0'
 LIBVPX_BUILD_VP9 = False
 
 sys.path.append(os.path.join(SCRIPT_DIR, '..', 'libs'))
@@ -148,6 +148,7 @@ def BuildWebRTC(output_dir, target_arch, flavor, gn_target_name,
                    ('true' if use_bitcode else 'false'))
     gn_args.append('use_goma=' + ('true' if use_goma else 'false'))
     gn_args.append('rtc_enable_symbol_export=true')
+    gn_args.append('treat_warnings_as_errors=false')
 
     args_string = ' '.join(gn_args + extra_gn_args)
     logging.info('Building WebRTC with args: %s', args_string)
@@ -200,6 +201,7 @@ def main():
                     IOS_DEPLOYMENT_TARGET, LIBVPX_BUILD_VP9, args.bitcode,
                     args.use_goma, gn_args)
 
+    return
     # Create FAT archive.
     lib_paths = [
         os.path.join(args.output_dir, arch + '_libs') for arch in architectures
