@@ -83,7 +83,9 @@ constexpr int kRtpHistoryMs = 5000;
 
 constexpr webrtc::AudioProcessing::Config::GainController1::Mode
     kDefaultAgcMode =
-#if defined(WEBRTC_IOS) || defined(WEBRTC_ANDROID)
+#if defined(WEBRTC_CATALYST)
+    webrtc::AudioProcessing::Config::GainController1::kAdaptiveAnalog;
+#elif defined(WEBRTC_IOS) || defined(WEBRTC_ANDROID)
         webrtc::AudioProcessing::Config::GainController1::kFixedDigital;
 #else
         webrtc::AudioProcessing::Config::GainController1::kAdaptiveAnalog;
