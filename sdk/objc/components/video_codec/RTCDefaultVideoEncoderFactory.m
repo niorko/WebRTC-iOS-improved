@@ -41,15 +41,20 @@
       [[RTC_OBJC_TYPE(RTCVideoCodecInfo) alloc] initWithName:kRTCVideoCodecH264Name
                                                   parameters:constrainedBaselineParams];
 
+  #if !defined(WEBRTC_CATALYST)
   RTC_OBJC_TYPE(RTCVideoCodecInfo) *vp8Info =
       [[RTC_OBJC_TYPE(RTCVideoCodecInfo) alloc] initWithName:kRTCVideoCodecVp8Name];
+  #endif
 
   NSMutableArray<RTC_OBJC_TYPE(RTCVideoCodecInfo) *> *result = [@[
     constrainedHighInfo,
     constrainedBaselineInfo,
+    #if !defined(WEBRTC_CATALYST)
     vp8Info,
+    #endif
   ] mutableCopy];
 
+  #if !defined(WEBRTC_CATALYST)
   if ([RTC_OBJC_TYPE(RTCVideoEncoderVP9) isSupported]) {
     [result
         addObject:[[RTC_OBJC_TYPE(RTCVideoCodecInfo) alloc] initWithName:kRTCVideoCodecVp9Name]];
@@ -59,6 +64,7 @@
     [result
         addObject:[[RTC_OBJC_TYPE(RTCVideoCodecInfo) alloc] initWithName:kRTCVideoCodecAv1Name]];
   }
+  #endif
 
   return result;
 }
@@ -66,7 +72,9 @@
 - (id<RTC_OBJC_TYPE(RTCVideoEncoder)>)createEncoder:(RTC_OBJC_TYPE(RTCVideoCodecInfo) *)info {
   if ([info.name isEqualToString:kRTCVideoCodecH264Name]) {
     return [[RTC_OBJC_TYPE(RTCVideoEncoderH264) alloc] initWithCodecInfo:info];
-  } else if ([info.name isEqualToString:kRTCVideoCodecVp8Name]) {
+  }
+  #if !defined(WEBRTC_CATALYST)
+  else if ([info.name isEqualToString:kRTCVideoCodecVp8Name]) {
     return [RTC_OBJC_TYPE(RTCVideoEncoderVP8) vp8Encoder];
   } else if ([info.name isEqualToString:kRTCVideoCodecVp9Name] &&
              [RTC_OBJC_TYPE(RTCVideoEncoderVP9) isSupported]) {
@@ -75,6 +83,7 @@
              [RTC_OBJC_TYPE(RTCVideoEncoderAV1) isSupported]) {
     return [RTC_OBJC_TYPE(RTCVideoEncoderAV1) av1Encoder];
   }
+  #endif
 
   return nil;
 }
