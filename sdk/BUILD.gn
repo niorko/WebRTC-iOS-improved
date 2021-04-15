@@ -656,7 +656,6 @@ if (is_ios || is_mac) {
       ]
 
       deps = [
-        ":av1",
         ":base_objc",
         ":native_video",
         ":videocodec_objc",
@@ -664,6 +663,7 @@ if (is_ios || is_mac) {
       ]
       if (target_environment != "catalyst") {
         deps += [
+          ":av1",
           ":vp8",
           ":vp9",
           ":vpx_codec_constants",
