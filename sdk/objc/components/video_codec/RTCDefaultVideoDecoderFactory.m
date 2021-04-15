@@ -13,9 +13,11 @@
 #import "RTCH264ProfileLevelId.h"
 #import "RTCVideoDecoderH264.h"
 #import "api/video_codec/RTCVideoCodecConstants.h"
+#if !defined(WEBRTC_CATALYST)
 #import "api/video_codec/RTCVideoDecoderAV1.h"
 #import "api/video_codec/RTCVideoDecoderVP8.h"
 #import "api/video_codec/RTCVideoDecoderVP9.h"
+#endif
 #import "base/RTCVideoCodecInfo.h"
 
 @implementation RTC_OBJC_TYPE (RTCDefaultVideoDecoderFactory)
@@ -39,15 +41,20 @@
       [[RTC_OBJC_TYPE(RTCVideoCodecInfo) alloc] initWithName:kRTCVideoCodecH264Name
                                                   parameters:constrainedBaselineParams];
 
+  #if !defined(WEBRTC_CATALYST)
   RTC_OBJC_TYPE(RTCVideoCodecInfo) *vp8Info =
       [[RTC_OBJC_TYPE(RTCVideoCodecInfo) alloc] initWithName:kRTCVideoCodecVp8Name];
+  #endif
 
   NSMutableArray<RTC_OBJC_TYPE(RTCVideoCodecInfo) *> *result = [@[
     constrainedHighInfo,
     constrainedBaselineInfo,
+    #if !defined(WEBRTC_CATALYST)
     vp8Info,
+    #endif
   ] mutableCopy];
 
+  #if !defined(WEBRTC_CATALYST)
   if ([RTC_OBJC_TYPE(RTCVideoDecoderVP9) isSupported]) {
     [result
         addObject:[[RTC_OBJC_TYPE(RTCVideoCodecInfo) alloc] initWithName:kRTCVideoCodecVp9Name]];
@@ -57,6 +64,7 @@
     [result
         addObject:[[RTC_OBJC_TYPE(RTCVideoCodecInfo) alloc] initWithName:kRTCVideoCodecAv1Name]];
   }
+  #endif
 
   return result;
 }
@@ -64,15 +72,20 @@
 - (id<RTC_OBJC_TYPE(RTCVideoDecoder)>)createDecoder:(RTC_OBJC_TYPE(RTCVideoCodecInfo) *)info {
   if ([info.name isEqualToString:kRTCVideoCodecH264Name]) {
     return [[RTC_OBJC_TYPE(RTCVideoDecoderH264) alloc] init];
-  } else if ([info.name isEqualToString:kRTCVideoCodecVp8Name]) {
+  } 
+  #if !defined(WEBRTC_CATALYST)
+  else if ([info.name isEqualToString:kRTCVideoCodecVp8Name]) {
     return [RTC_OBJC_TYPE(RTCVideoDecoderVP8) vp8Decoder];
-  } else if ([info.name isEqualToString:kRTCVideoCodecVp9Name] &&
+  }
+  else if ([info.name isEqualToString:kRTCVideoCodecVp9Name] &&
              [RTC_OBJC_TYPE(RTCVideoDecoderVP9) isSupported]) {
     return [RTC_OBJC_TYPE(RTCVideoDecoderVP9) vp9Decoder];
-  } else if ([info.name isEqualToString:kRTCVideoCodecAv1Name] &&
+  }
+  else if ([info.name isEqualToString:kRTCVideoCodecAv1Name] &&
              [RTC_OBJC_TYPE(RTCVideoDecoderAV1) isSupported]) {
     return [RTC_OBJC_TYPE(RTCVideoDecoderAV1) av1Decoder];
   }
+  #endif
 
   return nil;
 }
