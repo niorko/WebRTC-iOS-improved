@@ -78,6 +78,14 @@ public class Camera2Enumerator implements CameraEnumerator {
         == CameraMetadata.LENS_FACING_BACK;
   }
 
+  @Override
+  public boolean hasTorch(String deviceName) {
+    CameraCharacteristics characteristics = getCameraCharacteristics(deviceName);
+
+    return characteristics != null
+        && characteristics.get(CameraCharacteristics.FLASH_INFO_AVAILABLE);
+  }
+
   @Nullable
   @Override
   public List<CaptureFormat> getSupportedFormats(String deviceName) {

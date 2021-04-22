@@ -67,6 +67,27 @@ public interface CameraVideoCapturer extends VideoCapturer {
    */
   void switchCamera(CameraSwitchHandler switchEventsHandler, String cameraName);
 
+ /**
+   * Torch handler - one of these functions are invoked with the result of torch().
+   * The callback may be called on an arbitrary thread.
+   */
+  public interface TorchHandler {
+    // Invoked on success.
+    void onTorchSuccess();
+
+    // Invoked on failure, e.g. camera is stopped or only one camera available.
+    void onTorchError(String errorDescription);
+
+    // Invoked on torch is unsupported by camera
+    void onTorchUnsupported();
+  }
+
+  /**
+   * Switch torch state. This can only be called while the camera is running.
+   * This function can be called from any thread.
+   */
+  void torch(boolean state, TorchHandler torchHandler);
+
   /**
    * MediaRecorder add/remove handler - one of these functions are invoked with the result of
    * addMediaRecorderToCamera() or removeMediaRecorderFromCamera calls.
