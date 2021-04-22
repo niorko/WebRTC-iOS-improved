@@ -172,14 +172,14 @@ config("common_inherited_config") {
   if (is_posix || is_fuchsia) {
     defines += [ "WEBRTC_POSIX" ]
   }
-  if (target_environment == "catalyst") {
-    defines += [ "WEBRTC_CATALYST" ]
-  }
   if (is_ios) {
     defines += [
       "WEBRTC_MAC",
       "WEBRTC_IOS",
     ]
+    if (target_environment == "catalyst") {
+      defines += [ "WEBRTC_CATALYST" ]
+    }
   }
   if (is_linux || is_chromeos) {
     defines += [ "WEBRTC_LINUX" ]

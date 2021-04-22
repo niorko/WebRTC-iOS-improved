@@ -499,7 +499,7 @@ rtc_library("webrtc_vp8") {
     "../../system_wrappers:metrics",
     "//third_party/libyuv",
   ]
-  if (target_environment != "catalyst") {
+  if (is_ios && target_environment != "catalyst") {
     deps += [
       ":webrtc_libvpx_interface",
     ]
@@ -605,7 +605,7 @@ rtc_library("webrtc_vp9") {
     "svc:scalable_video_controller",
     "//third_party/libyuv",
   ]
-  if (target_environment != "catalyst") {
+  if (is_ios && target_environment != "catalyst") {
     deps += [
       ":webrtc_libvpx_interface",
     ]

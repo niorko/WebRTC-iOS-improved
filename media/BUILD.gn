@@ -242,7 +242,7 @@ rtc_library("rtc_internal_video_codecs") {
     "../rtc_base/system:rtc_export",
     "../test:fake_video_codecs",
   ]
-  if (target_environment != "catalyst") {
+  if (is_ios && target_environment != "catalyst") {
     deps += [
       "../modules/video_coding:webrtc_vp8",
       "../modules/video_coding:webrtc_vp9",
