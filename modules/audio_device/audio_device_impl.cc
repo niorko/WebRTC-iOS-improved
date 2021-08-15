@@ -134,6 +134,9 @@ int32_t AudioDeviceModuleImpl::CheckPlatform() {
 #elif defined(WEBRTC_LINUX)
   platform = kPlatformLinux;
   RTC_LOG(LS_INFO) << "current platform is Linux";
+#elif defined(WEBRTC_CATALYST)
+  platform = kPlatformCatalyst;
+  RTC_LOG(LS_INFO) << "current platform is IOS (Catalyst)";
 #elif defined(WEBRTC_IOS)
   platform = kPlatformIOS;
   RTC_LOG(LS_INFO) << "current platform is IOS";

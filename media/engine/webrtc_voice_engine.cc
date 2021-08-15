@@ -395,7 +395,10 @@ void WebRtcVoiceEngine::Init() {
     AudioOptions options;
     options.echo_cancellation = true;
     options.auto_gain_control = true;
-#if defined(WEBRTC_IOS)
+#if defined(WEBRTC_CATALYST)
+    options.noise_suppression = false;
+    options.typing_detection = false;
+#elif defined(WEBRTC_IOS)
     // On iOS, VPIO provides built-in NS.
     options.noise_suppression = false;
     options.typing_detection = false;
@@ -444,7 +447,7 @@ bool WebRtcVoiceEngine::ApplyOptions(const AudioOptions& options_in) {
   // Use desktop AEC by default, when not using hardware AEC.
   bool use_mobile_software_aec = false;
 
-#if defined(WEBRTC_IOS)
+#if defined(WEBRTC_IOS) && !defined(WEBRTC_CATALYST)
   if (options.ios_force_software_aec_HACK &&
       *options.ios_force_software_aec_HACK) {
     // EC may be forced on for a device known to have non-functioning platform
@@ -468,7 +471,7 @@ bool WebRtcVoiceEngine::ApplyOptions(const AudioOptions& options_in) {
 #endif
 
 // Set and adjust gain control options.
-#if defined(WEBRTC_IOS)
+#if defined(WEBRTC_IOS) && !defined(WEBRTC_CATALYST)
   // On iOS, VPIO provides built-in AGC.
   options.auto_gain_control = false;
   options.experimental_agc = false;
@@ -602,7 +605,10 @@ bool WebRtcVoiceEngine::ApplyOptions(const AudioOptions& options_in) {
   if (options.auto_gain_control) {
     const bool enabled = *options.auto_gain_control;
     apm_config.gain_controller1.enabled = enabled;
-#if defined(WEBRTC_IOS) || defined(WEBRTC_ANDROID)
+#if defined(WEBRTC_CATALYST)
+    apm_config.gain_controller1.mode =
+        apm_config.gain_controller1.kFixedDigital;
+#elif defined(WEBRTC_IOS) || defined(WEBRTC_ANDROID)
     apm_config.gain_controller1.mode =
         apm_config.gain_controller1.kFixedDigital;
 #else
