@@ -1331,6 +1331,7 @@ if (is_ios || is_mac) {
         ]
 
         deps = [
+          ":metal_objc",
           ":audio_objc",
           ":base_objc",
           ":default_codec_factory_objc",
