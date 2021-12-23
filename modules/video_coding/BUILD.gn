@@ -528,13 +528,9 @@ rtc_library("mock_libvpx_interface") {
   testonly = true
   sources = [ "codecs/interface/mock_libvpx_interface.h" ]
   deps = [
+    ":webrtc_libvpx_interface",
     "../../test:test_support",
   ]
-  if (target_environment != "catalyst") {
-    deps += [
-      ":webrtc_libvpx_interface",
-    ]
-  }
 }
 
 # This target includes the internal SW codec.
@@ -553,6 +549,7 @@ rtc_library("webrtc_vp8") {
     ":codec_globals_headers",
     ":video_codec_interface",
     ":video_coding_utility",
+    ":webrtc_libvpx_interface",
     ":webrtc_vp8_temporal_layers",
     "../../api:fec_controller_api",
     "../../api:scoped_refptr",
@@ -573,11 +570,6 @@ rtc_library("webrtc_vp8") {
     "../../system_wrappers:metrics",
     "//third_party/libyuv",
   ]
-  if (target_environment != "catalyst") {
-    deps += [
-      ":webrtc_libvpx_interface",
-    ]
-  }
   absl_deps = [
     "//third_party/abseil-cpp/absl/algorithm:container",
     "//third_party/abseil-cpp/absl/strings:strings",
@@ -654,6 +646,7 @@ rtc_library("webrtc_vp9") {
   deps = [
     ":video_codec_interface",
     ":video_coding_utility",
+    ":webrtc_libvpx_interface",
     ":webrtc_vp9_helpers",
     "../../api:fec_controller_api",
     "../../api:refcountedbase",
@@ -679,11 +672,6 @@ rtc_library("webrtc_vp9") {
     "svc:svc_rate_allocator",
     "//third_party/libyuv",
   ]
-  if (target_environment != "catalyst") {
-    deps += [
-      ":webrtc_libvpx_interface",
-    ]
-  }
   absl_deps = [
     "//third_party/abseil-cpp/absl/algorithm:container",
     "//third_party/abseil-cpp/absl/memory",
@@ -952,7 +940,11 @@ if (rtc_include_tests) {
       ":video_coding_utility",
       ":videocodec_test_impl",
       ":webrtc_h264",
+      ":webrtc_libvpx_interface",
       ":webrtc_multiplex",
+      ":webrtc_vp8",
+      ":webrtc_vp9",
+      ":webrtc_vp9_helpers",
       "../../api:create_frame_generator",
       "../../api:create_videocodec_test_fixture_api",
       "../../api:frame_generator_api",
@@ -981,14 +973,6 @@ if (rtc_include_tests) {
       "../rtp_rtcp:rtp_rtcp_format",
       "//third_party/libyuv",
     ]
-    if (target_environment != "catalyst") {
-      deps += [
-        ":webrtc_libvpx_interface",
-        ":webrtc_vp8",
-        ":webrtc_vp9",
-        ":webrtc_vp9_helpers",
-      ]
-    }
     absl_deps = [ "//third_party/abseil-cpp/absl/types:optional" ]
 
     data = video_coding_modules_tests_resources
