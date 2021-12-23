@@ -39,7 +39,7 @@ AudioOptions::~AudioOptions() = default;
 
 void AudioOptions::SetAll(const AudioOptions& change) {
   SetFrom(&echo_cancellation, change.echo_cancellation);
-#if defined(WEBRTC_IOS) && !defined(WEBRTC_CATALYST)
+#if defined(WEBRTC_IOS)
   SetFrom(&ios_force_software_aec_HACK, change.ios_force_software_aec_HACK);
 #endif
   SetFrom(&auto_gain_control, change.auto_gain_control);
@@ -69,7 +69,7 @@ void AudioOptions::SetAll(const AudioOptions& change) {
 
 bool AudioOptions::operator==(const AudioOptions& o) const {
   return echo_cancellation == o.echo_cancellation &&
-#if defined(WEBRTC_IOS) && !defined(WEBRTC_CATALYST)
+#if defined(WEBRTC_IOS)
          ios_force_software_aec_HACK == o.ios_force_software_aec_HACK &&
 #endif
          auto_gain_control == o.auto_gain_control &&
@@ -100,7 +100,7 @@ std::string AudioOptions::ToString() const {
   rtc::SimpleStringBuilder result(buffer);
   result << "AudioOptions {";
   ToStringIfSet(&result, "aec", echo_cancellation);
-#if defined(WEBRTC_IOS) && !defined(WEBRTC_CATALYST)
+#if defined(WEBRTC_IOS)
   ToStringIfSet(&result, "ios_force_software_aec_HACK",
                 ios_force_software_aec_HACK);
 #endif

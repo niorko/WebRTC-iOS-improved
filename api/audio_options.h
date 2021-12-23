@@ -37,7 +37,7 @@ struct RTC_EXPORT AudioOptions {
   // Audio processing that attempts to filter away the output signal from
   // later inbound pickup.
   absl::optional<bool> echo_cancellation;
-#if defined(WEBRTC_IOS) && !defined(WEBRTC_CATALYST)
+#if defined(WEBRTC_IOS)
   // Forces software echo cancellation on iOS. This is a temporary workaround
   // (until Apple fixes the bug) for a device with non-functioning AEC. May
   // improve performance on that particular device, but will cause unpredictable
