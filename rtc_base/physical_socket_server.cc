@@ -1300,7 +1300,7 @@ bool PhysicalSocketServer::WaitSelect(int cmsWait, bool process_io) {
         // Descriptor is too big for select() and was closed before the select.
         // Trigger some read/write actions so that we detect and handle the close through error handling.
         if (fd >= FD_SETSIZE) {
-          ProcessEvents(pdispatcher, true, true, false);
+          ProcessEvents(pdispatcher, true, true, false, true);
           continue;
         }
         // "select"ing a file descriptor that is equal to or larger than
