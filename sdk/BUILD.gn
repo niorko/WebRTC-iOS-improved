@@ -1331,6 +1331,9 @@ if (is_ios || is_mac) {
         if (rtc_ios_macos_use_opengl_rendering) {
           deps += [ ":opengl_ui_objc" ]
         }
+        if (target_environment == "catalyst") {
+          deps += [ ":metal_objc" ]
+        }
         if (!build_with_chromium) {
           deps += [
             ":callback_logger_objc",
