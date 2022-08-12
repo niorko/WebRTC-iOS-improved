@@ -1369,6 +1369,12 @@ void AllocationSequence::DisableEquivalentPhases(const rtc::Network* network,
     *flags |= PORTALLOCATOR_DISABLE_TCP;
   }
 
+  // If the allocation is not finished for TCP and still active for that protocol
+  // we must disable the TCP port allocator to prevent a new allocation for this network.
+  if (state_ == kRunning && phase_ <= PHASE_TCP && !IsFlagSet(PORTALLOCATOR_DISABLE_TCP)) {
+    *flags |= PORTALLOCATOR_DISABLE_TCP;
+  }
+
   if (config_ && config) {
     // We need to regather srflx candidates if either of the following
     // conditions occurs:
