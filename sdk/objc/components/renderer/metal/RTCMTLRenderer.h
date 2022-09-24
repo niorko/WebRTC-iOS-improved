@@ -9,7 +9,7 @@
  */
 
 #import <Foundation/Foundation.h>
-#if TARGET_OS_IPHONE
+#if TARGET_OS_IPHONE || TARGET_OS_TV
 #import <UIKit/UIKit.h>
 #else
 #import <AppKit/AppKit.h>
@@ -37,7 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
  * cleanups.
  */
 
-#if TARGET_OS_IOS
+#if TARGET_OS_IOS || TARGET_OS_TV
 - (BOOL)addRenderingDestination:(__kindof UIView *)view;
 #else
 - (BOOL)addRenderingDestination:(__kindof NSView *)view;

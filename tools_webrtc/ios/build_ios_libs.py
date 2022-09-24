@@ -34,7 +34,8 @@ SDK_XCFRAMEWORK_NAME = 'WebRTC.xcframework'
 ENABLED_ARCHS = [
     'device:arm64', 'simulator:arm64', 'simulator:x64',
     'catalyst:arm64', 'catalyst:x64',
-    'arm64', 'x64'
+    'arm64', 'x64',
+    'appletvos:arm64', 'appletvsimulator:arm64', 'appletvsimulator:x64'
 ]
 DEFAULT_ARCHS = [
     'device:arm64', 'simulator:arm64', 'simulator:x64'
@@ -42,7 +43,9 @@ DEFAULT_ARCHS = [
 IOS_DEPLOYMENT_TARGET = {
     'device': '12.0',
     'simulator': '12.0',
-    'catalyst': '14.0'
+    'catalyst': '14.0',
+    'appletvos': '15.0',
+    'appletvsimulator': '15.0'
 }
 LIBVPX_BUILD_VP9 = False
 
