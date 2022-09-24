@@ -1,0 +1,28 @@
+diff --git a/nasm_assemble.gni b/nasm_assemble.gni
+index 4c3d534502dd91dffa02aaab6be6962f9a85da3c..8c65849453c4d0c6ac88023eda86718392d1dea9 100644
+--- a/nasm_assemble.gni
++++ b/nasm_assemble.gni
+@@ -57,7 +57,7 @@ if ((is_mac || is_ios) && (current_cpu == "x86" || current_cpu == "x64")) {
+   if (is_mac) {
+     _nasm_flags += [ "--macho-min-os=macos$mac_deployment_target" ]
+   } else if (is_ios) {
+-    if (target_environment == "device") {
++    if (target_environment == "device" || target_environment == "appletvos") {
+       _nasm_flags += [ "--macho-min-os=ios$ios_deployment_target" ]
+     } else {
+       _nasm_flags +=
+diff --git a/output/outmacho.c b/output/outmacho.c
+index d1568a714ec5f2e190a132528e362f203b592829..0ed7674481a1ca8231da3c68820d4307b1ea39eb 100644
+--- a/output/outmacho.c
++++ b/output/outmacho.c
+@@ -2434,6 +2434,10 @@ bool macho_set_min_os(const char *str) {
+     } else if ((strstr(platform_ver, "ios") == platform_ver)) {
+         if (environment[0] == '\0') {
+             platform = PLATFORM_IOS;
++        } else if ((strstr(environment, "appletvos") == environment)) {
++            platform = PLATFORM_TVOS;
++        } else if ((strstr(environment, "appletvsimulator") == environment)) {
++            platform = PLATFORM_TVOSSIMULATOR;
+         } else if ((strstr(environment, "simulator") == environment)) {
+             platform = PLATFORM_IOSSIMULATOR;
+         } else if ((strstr(environment, "catalyst") == environment)) {

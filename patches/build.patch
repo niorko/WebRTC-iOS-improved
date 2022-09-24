@@ -1,0 +1,185 @@
+diff --git a/config/ios/config.gni b/config/ios/config.gni
+index 754867769021715247f7ae76d6605d0d5805ee32..15c3bff34fb34af1b84dbbb17391be1f91932b24 100644
+--- a/config/ios/config.gni
++++ b/config/ios/config.gni
+@@ -25,4 +25,5 @@ if (target_environment == "") {
+ }
+ 
+ assert(target_environment == "simulator" || target_environment == "device" ||
+-       target_environment == "catalyst")
++       target_environment == "catalyst" || target_environment == "appletvos" ||
++       target_environment == "appletvsimulator")
+diff --git a/config/ios/rules.gni b/config/ios/rules.gni
+index 72659f9116a6c6776518b2d804a9fcf84b279abb..0a3c4452b75640e0b7ab86b0268339786f74a3aa 100644
+--- a/config/ios/rules.gni
++++ b/config/ios/rules.gni
+@@ -310,7 +310,7 @@ template("create_signed_bundle") {
+                            ])
+ 
+     bundle_root_dir = "$_bundle_gen_dir/$_output_name$_bundle_extension"
+-    if (target_environment == "simulator" || target_environment == "device") {
++    if (target_environment == "simulator" || target_environment == "device" || target_environment == "appletvos" || target_environment == "appletvsimulator") {
+       bundle_contents_dir = bundle_root_dir
+       bundle_resources_dir = bundle_contents_dir
+       bundle_executable_dir = bundle_contents_dir
+@@ -379,7 +379,7 @@ template("create_signed_bundle") {
+       code_signing_outputs +=
+           [ "$bundle_contents_dir/_CodeSignature/CodeResources" ]
+     }
+-    if (ios_code_signing_identity != "" && target_environment == "device" &&
++    if (ios_code_signing_identity != "" && (target_environment == "device" || target_environment == "appletvos") &&
+         _enable_embedded_mobileprovision) {
+       code_signing_outputs +=
+           [ "$bundle_contents_dir/embedded.mobileprovision" ]
+@@ -689,7 +689,7 @@ template("ios_app_bundle") {
+     visibility = [ ":$_arch_executable_target" ]
+   }
+ 
+-  if (!is_fat_secondary_toolchain || target_environment == "simulator") {
++  if (!is_fat_secondary_toolchain || target_environment == "simulator" || target_environment == "appletvsimulator") {
+     _generate_entitlements_target = _target_name + "_gen_entitlements"
+     _generate_entitlements_output =
+         get_label_info(":$_generate_entitlements_target($_primary_toolchain)",
+@@ -747,7 +747,7 @@ template("ios_app_bundle") {
+     }
+     frameworks += [ "UIKit.framework" ]
+ 
+-    if (target_environment == "simulator") {
++    if (target_environment == "simulator" || target_environment == "appletvsimulator") {
+       deps += [ ":$_generate_entitlements_target($_primary_toolchain)" ]
+ 
+       if (!defined(inputs)) {
+@@ -933,7 +933,7 @@ template("ios_app_bundle") {
+         }
+         bundle_deps += _variant.bundle_deps
+ 
+-        if (target_environment == "simulator") {
++        if (target_environment == "simulator" || target_environment == "appletvsimulator") {
+           if (!defined(data_deps)) {
+             data_deps = []
+           }
+@@ -1432,7 +1432,7 @@ template("ios_framework_bundle") {
+       _public_headers = invoker.public_headers
+ 
+       _framework_root_dir = "$root_out_dir/$_output_name.framework"
+-      if (target_environment == "simulator" || target_environment == "device") {
++      if (target_environment == "simulator" || target_environment == "device" || target_environment == "appletvos" || target_environment == "appletvsimulator") {
+         _framework_contents_dir = _framework_root_dir
+       } else if (target_environment == "catalyst") {
+         _framework_contents_dir = "$_framework_root_dir/Versions/A"
+diff --git a/config/apple/sdk_info.py b/config/apple/sdk_info.py
+index a0ab2fa9d4a87f08b1c0e19cbc404f973c4807e5..cb06d147b95ac79d3840123a3c058c8d5471bdce 100755
+--- a/config/apple/sdk_info.py
++++ b/config/apple/sdk_info.py
+@@ -134,7 +134,7 @@ def main():
+                       default='.',
+                       help='Value of gn $root_build_dir')
+   parser.add_argument('platform',
+-                      choices=['iphoneos', 'iphonesimulator', 'macosx'])
++                      choices=['iphoneos', 'iphonesimulator', 'macosx', 'appletvos', 'appletvsimulator'])
+   args = parser.parse_args()
+   if args.developer_dir:
+     os.environ['DEVELOPER_DIR'] = args.developer_dir
+diff --git a/config/ios/ios_sdk.gni b/config/ios/ios_sdk.gni
+index af1b4c6254c47d339494e4f48c77a7b47f2e575a..4d42a442c24dddeff9bbabb655c4f4419d39d51a 100644
+--- a/config/ios/ios_sdk.gni
++++ b/config/ios/ios_sdk.gni
+@@ -126,6 +126,12 @@ if (ios_sdk_path == "") {
+   } else if (target_environment == "catalyst") {
+     ios_sdk_name = "macosx"
+     ios_sdk_platform = "MacOSX"
++  } else if (target_environment == "appletvos") {
++    ios_sdk_name = "appletvos"
++    ios_sdk_platform = "AppleTVOS"
++  } else if (target_environment == "appletvsimulator") {
++    ios_sdk_name = "appletvsimulator"
++    ios_sdk_platform = "AppleTVSimulator"
+   } else {
+     assert(false, "unsupported environment: $target_environment")
+   }
+@@ -162,7 +168,7 @@ if (ios_sdk_path == "") {
+   xcode_version_int = _ios_sdk_result.xcode_version_int
+   xcode_build = _ios_sdk_result.xcode_build
+   machine_os_build = _ios_sdk_result.machine_os_build
+-  if (target_environment == "simulator") {
++  if (target_environment == "simulator" || target_environment == "appletvsimulator") {
+     # This is weird, but Xcode sets DTPlatformBuild to an empty field for
+     # simulator builds.
+     ios_platform_build = ""
+@@ -171,7 +177,7 @@ if (ios_sdk_path == "") {
+   }
+ }
+ 
+-if (target_environment == "device" && ios_enable_code_signing) {
++if ((target_environment == "device" || target_environment == "appletvos") && ios_enable_code_signing) {
+   # Automatically select a codesigning identity if no identity is configured.
+   # This only applies to device build as simulator builds are not signed.
+   if (ios_code_signing_identity == "") {
+diff --git a/config/ios/ios_test_runner_wrapper.gni b/config/ios/ios_test_runner_wrapper.gni
+index 3b06f06874999d3dc9e738cc614caee6236d0858..29a3a8243e3573b5e5f9feeacc46164b3c40fa60 100644
+--- a/config/ios/ios_test_runner_wrapper.gni
++++ b/config/ios/ios_test_runner_wrapper.gni
+@@ -106,7 +106,7 @@ template("ios_test_runner_wrapper") {
+     }
+ 
+     # test runner relies on iossim for simulator builds.
+-    if (target_environment == "simulator") {
++    if (target_environment == "simulator" || target_environment == "appletvsimulator") {
+       _rebased_root_build_dir = rebase_path("${root_build_dir}", root_build_dir)
+       data_deps += [ "//testing/iossim" ]
+ 
+diff --git a/config/ios/BUILD.gn b/config/ios/BUILD.gn
+index a4efcfb43d0ee2741f734e9a159dc77c65bf908f..da8d936fec8c659a6747bec693f2f28484511f50 100644
+--- a/config/ios/BUILD.gn
++++ b/config/ios/BUILD.gn
+@@ -28,9 +28,9 @@ config("compiler") {
+   }
+ 
+   # Environment.
+-  if (target_environment == "simulator") {
++  if (target_environment == "simulator" || target_environment == "appletvsimulator") {
+     triplet_environment = "-simulator"
+-  } else if (target_environment == "device") {
++  } else if (target_environment == "device" || target_environment == "appletvos") {
+     triplet_environment = ""
+   } else if (target_environment == "catalyst") {
+     triplet_environment = "-macabi"
+@@ -39,7 +39,11 @@ config("compiler") {
+   }
+ 
+   # OS.
+-  triplet_os = "apple-ios"
++  if (target_environment == "appletvos" || target_environment == "appletvsimulator") {
++    triplet_os = "apple-tvos"
++  } else {
++    triplet_os = "apple-ios"
++  }
+ 
+   # Set target.
+   common_flags = [
+@@ -158,6 +162,12 @@ config("ios_dynamic_flags") {
+   } else if (target_environment == "device") {
+     _swift_compatibility_libs_dir =
+         "$_swift_compatibility_libs_dir_prefix/iphoneos"
++  } else if (target_environment == "appletvos") {
++    _swift_compatibility_libs_dir =
++        "$_swift_compatibility_libs_dir_prefix/appletvos"
++  } else if (target_environment == "appletvsimulator") {
++    _swift_compatibility_libs_dir =
++        "$_swift_compatibility_libs_dir_prefix/appletvsimulator"
+   } else if (target_environment == "catalyst") {
+     # The Swift compatibility libraries have changed location starting with
+     # Xcode 13.0, so check the version of Xcode when deciding which path to
+diff --git a/config/ios/codesign.py b/config/ios/codesign.py
+index 522b6e5ed10f09bffb1ca057f41ad094c9c199d8..1b3d1d2e3b673d6a86e0fe114f7893d9246b314c 100644
+--- a/config/ios/codesign.py
++++ b/config/ios/codesign.py
+@@ -90,7 +90,7 @@ class Bundle(object):
+ 
+   @staticmethod
+   def Kind(platform, extension):
+-    if platform == 'iphonesimulator' or platform == 'iphoneos':
++    if platform == 'iphonesimulator' or platform == 'iphoneos' or platform == 'appletvos' or platform == 'appletvsimulator':
+       return 'ios'
+     if platform == 'macosx':
+       if extension == '.framework':
